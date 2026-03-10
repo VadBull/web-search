@@ -1,0 +1,51 @@
+services:
+  a1111:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: a1111-webui
+
+    ports:
+      - "7860:7860"
+
+    gpus: all
+
+    environment:
+      # A1111 latest
+      WEBUI_REPO: "https://github.com/AUTOMATIC1111/stable-diffusion-webui.git"
+      STABLE_DIFFUSION_REPO: "https://github.com/w-e-w/stablediffusion.git"
+      STABLE_DIFFUSION_COMMIT_HASH: "main"
+      GENERATIVE_MODELS_REPO: "https://github.com/Stability-AI/generative-models.git"
+      GENERATIVE_MODELS_COMMIT_HASH: "45c443b316737a4ab6e40413d7794a7f5657c19f"
+      K_DIFFUSION_REPO: "https://github.com/crowsonkb/k-diffusion.git"
+      K_DIFFUSION_COMMIT_HASH: "ab527a9a6d347f364e3d185ba6d714e22d80cb3c"
+      BLIP_REPO: "https://github.com/salesforce/BLIP.git"
+      BLIP_COMMIT_HASH: "48211a1594f1321b00f14c9f7a5b4813144b2fb9"
+      COMMANDLINE_ARGS: >-
+        --listen
+        --port 7860
+        --api
+        --enable-insecure-extension-access
+        --no-half-vae
+        --opt-sdp-attention
+        --medvram-sdxl
+
+    volumes:
+      - ./outputs:/data/outputs
+      - ./extensions:/data/extensions
+      - ./models:/data/models
+      - ./cache/hf:/opt/hf-cache
+      - ./cache/torch:/opt/torch-cache
+
+    shm_size: "2gb"
+
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    dns_search:
+      - local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    restart: "no"
